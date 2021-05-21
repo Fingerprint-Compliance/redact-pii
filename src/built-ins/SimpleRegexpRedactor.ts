@@ -1,12 +1,12 @@
 import { ISyncRedactor } from '../types';
-import { snakeCase } from 'lodash';
+// import { snakeCase } from 'lodash';
 
 export class SimpleRegexpRedactor implements ISyncRedactor {
   regexpMatcher: RegExp;
   replaceWith: string;
 
   constructor({
-    replaceWith = snakeCase(name).toUpperCase(),
+    replaceWith,
     regexpPattern: regexpMatcher
   }: {
     replaceWith: string;
