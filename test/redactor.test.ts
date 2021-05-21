@@ -1,9 +1,8 @@
-import { GoogleDLPRedactor, AsyncRedactor, SyncRedactor } from '../src';
+import { AsyncRedactor, SyncRedactor } from '../src';
 
 const redactor = new SyncRedactor();
 const compositeRedactorWithDLP = new AsyncRedactor({
   customRedactors: {
-    after: [new GoogleDLPRedactor()]
   }
 });
 
