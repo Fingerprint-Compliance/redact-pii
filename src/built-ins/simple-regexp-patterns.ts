@@ -17,4 +17,4 @@ export const username = /(user( ?name)?|login): \S+/gi;
 export const password = /(pass(word|phrase)?|secret): \S+/gi;
 export const credentials = /(login( cred(ential)?s| info(rmation)?)?|cred(ential)?s) ?:\s*\S+\s+\/?\s*\S+/gi;
 export const digits = /\b\d{4,}\b/g;
-export const url = /([^\s:/?#]+):\/\/([^/?#\s]*)([^?#\s]*)(\?([^#\s]*))?(#([^\s]*))?/g;
+export const url = /([^\s":/?#]+):\/\/([^/?#\s"]*)([^?#\s"]*)(\?([^#\s"]*))?(#([^\s"]*))?/g;
