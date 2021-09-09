@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Changelog
 
+## [4.0.0][] - 2021-09-09
+- BREAKING CHANGE: removing @google-cloud/dlp dependency
+- Improvement: adding `lib` directory to git, in order to use this library as is,
+  in the compiled version
+- Fix: improving regex pattern including dashes in email domain addresses
+- Fix: improving url regex in href links
+
 ## [3.2.3][] - 2019-09-12
 - Downgrade @google-cloud/dlp to avoid memory leak in recent versions
 
