@@ -2,8 +2,7 @@ import { AsyncRedactor, SyncRedactor } from '../src';
 
 const redactor = new SyncRedactor();
 const compositeRedactorWithDLP = new AsyncRedactor({
-  customRedactors: {
-  },
+  customRedactors: {},
 });
 
 describe('index.js', function () {
@@ -210,7 +209,10 @@ describe('index.js', function () {
     ['before http://www.example.com/foo/bar?foo=bar after', 'before URL after'],
     ['before http://www.example.com/foo/bar?foo=bar#/foo/bar after', 'before URL after'],
     ['My homepage is http://example.com\nAnd that is that.', 'My homepage is URL\nAnd that is that.'],
-    ['<a href="http://www.example.com/foo/bar?foo=bar#/foo/bar">your export page</a>', '<a href="URL">your export page</a>'],
+    [
+      '<a href="http://www.example.com/foo/bar?foo=bar#/foo/bar">your export page</a>',
+      '<a href="URL">your export page</a>',
+    ],
     ['<a href="http://www.example.com/foo/bar?foo=bar#/foo/bar">URL</a>', '<a href="URL">URL</a>'],
     ['<a href="http://www.example.com/foo/bar">page</a>', '<a href="URL">page</a>'],
   ]);
