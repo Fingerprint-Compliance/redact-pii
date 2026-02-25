@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # Changelog
 
+## [4.0.1][] - 2026-02-25
+
+- removing lodash usage in favour of a custom `toSnakeCase` function
+
 ## [4.0.3][] - 2026-02-24
 
 - run `npm audit fix` to update dependencies and fix security vulnerabilities
