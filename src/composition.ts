@@ -1,4 +1,3 @@
-import { snakeCase } from 'lodash';
 import { NameRedactor } from './built-ins/NameRedactor';
 import * as simpleRegexpBuiltIns from './built-ins/simple-regexp-patterns';
 import { SimpleRegexpRedactor } from './built-ins/SimpleRegexpRedactor';
@@ -9,7 +8,7 @@ import {
   SyncCustomRedactorConfig,
   ISyncRedactor,
 } from './types';
-import { isSimpleRegexpCustomRedactorConfig } from './utils';
+import { isSimpleRegexpCustomRedactorConfig, toSnakeCase } from './utils';
 
 function normalizeCustomRedactorConfig(redactorConfig: any) {
   return isSimpleRegexpCustomRedactorConfig(redactorConfig)
@@ -38,7 +37,7 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
       childRedactors.push(
         new SimpleRegexpRedactor({
           regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],
-          replaceWith: opts.globalReplaceWith || snakeCase(regexpName).toUpperCase(),
+          replaceWith: opts.globalReplaceWith || toSnakeCase(regexpName).toUpperCase(),
         })
       );
     }

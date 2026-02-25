@@ -9,3 +9,13 @@ export function isSimpleRegexpCustomRedactorConfig(
 export function isSyncRedactor(redactor: IRedactor): redactor is ISyncRedactor {
   return typeof (redactor as ISyncRedactor).redact === 'function';
 }
+
+export function toSnakeCase(str?: string): string {
+  if (!str) {
+    return '';
+  }
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/[\s-]+/g, '_')
+    .toUpperCase();
+}
