@@ -6,7 +6,7 @@
 
 Remove personally identifiable information from text. 
 
-### Prerequesites
+### Prerequisites
 
 This library is primarily written for node.js but it should work in the browser as well.
 It is written in TypeScript and compiles to ES2017. The library makes use of `async` functions and hence needs node.js 8.0.0 or higher (or a modern browser). If this is a problem for you please open an issue and we may consider adapting the compiler settings to support older node.js versions.
