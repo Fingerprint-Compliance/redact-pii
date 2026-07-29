@@ -183,6 +183,26 @@ describe('index.js', function () {
     expect(customRedactor.redact('my ip: 10.1.1.235.')).toBe('my ip: REDACTED.');
   });
 
+  it('should respect per-built-in replaceWith overrides', function () {
+    const redactor = new SyncRedactor({
+      builtInRedactors: {
+        names: { replaceWith: 'ANONYMOUS_PERSON' },
+        phoneNumber: { replaceWith: 'PHONE' },
+      },
+    });
+    expect(redactor.redact('Dear David Johnson, call 555-555-5555')).toBe('Dear ANONYMOUS_PERSON, call PHONE');
+  });
+
+  it('should prefer per-built-in replaceWith over globalReplaceWith', function () {
+    const redactor = new SyncRedactor({
+      globalReplaceWith: 'REDACTED',
+      builtInRedactors: {
+        names: { replaceWith: 'NAME_ONLY' },
+      },
+    });
+    expect(redactor.redact('Dear David Johnson, call 555-555-5555')).toBe('Dear NAME_ONLY, call REDACTED');
+  });
+
   it('should accept new patterns', function () {
     let redactor = new SyncRedactor({
       customRedactors: { after: [{ regexpPattern: /\b(cat|dog|cow)s?\b/gi, replaceWith: 'ANIMAL' }] },

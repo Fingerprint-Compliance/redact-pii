@@ -19,6 +19,15 @@ function normalizeCustomRedactorConfig(redactorConfig: any) {
     : redactorConfig;
 }
 
+function resolveBuiltInReplaceWith(
+  opts: CompositeRedactorOptions<any>,
+  redactorName: string,
+  defaultReplaceWith: string
+): string {
+  const builtInConfig = opts.builtInRedactors && (opts.builtInRedactors as any)[redactorName];
+  return (builtInConfig && builtInConfig.replaceWith) || opts.globalReplaceWith || defaultReplaceWith;
+}
+
 export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts: CompositeRedactorOptions<T> = {}) {
   const childRedactors: T extends SyncCustomRedactorConfig
     ? Array<ISyncRedactor>
@@ -37,14 +46,14 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
       childRedactors.push(
         new SimpleRegexpRedactor({
           regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],
-          replaceWith: opts.globalReplaceWith || toSnakeCase(regexpName).toUpperCase(),
+          replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName).toUpperCase()),
         })
       );
     }
   }
 
   if (!opts.builtInRedactors || !opts.builtInRedactors.names || opts.builtInRedactors.names.enabled !== false) {
-    childRedactors.push(new NameRedactor(opts.globalReplaceWith));
+    childRedactors.push(new NameRedactor(resolveBuiltInReplaceWith(opts, 'names', 'PERSON_NAME')));
   }
 
   if (opts.customRedactors && opts.customRedactors.after) {
