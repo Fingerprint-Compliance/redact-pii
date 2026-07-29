@@ -13,7 +13,8 @@ export class SimpleRegexpRedactor implements ISyncRedactor {
     regexpPattern: RegExp;
   }) {
     this.replaceWith = replaceWith;
-    this.regexpMatcher = regexpMatcher;
+    // Clone so each redactor owns its lastIndex / match state (module patterns are shared).
+    this.regexpMatcher = new RegExp(regexpMatcher.source, regexpMatcher.flags);
   }
 
   redact(textToRedact: string) {
