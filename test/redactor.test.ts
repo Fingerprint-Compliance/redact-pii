@@ -111,7 +111,8 @@ describe('index.js', function () {
     ['my ssn: 123 45 6789.', 'my ssn: US_SOCIAL_SECURITY_NUMBER.'],
     ['my ssn: 123-45-6789.', 'my ssn: US_SOCIAL_SECURITY_NUMBER.'],
     ['my ssn: 123.45.6789.', 'my ssn: US_SOCIAL_SECURITY_NUMBER.'],
-    ['my ssn: 123456789.', 'my ssn: DIGITS.'],
+    // Bare 9-digit runs are not SSN (need separators); digits redactor is opt-in.
+    ['my ssn: 123456789.', 'my ssn: 123456789.'],
   ]);
 
   TestCase('should replace phone numbers', [
@@ -125,7 +126,7 @@ describe('index.js', function () {
 
   TestCase('should replace ip addresses', [
     ['my ip: 10.1.1.235.', 'my ip: IP_ADDRESS.'],
-    ['my ip: 1234:ABCD:23AF:1111:2222:3333:0000:0000:0000.', 'my ip: IP_ADDRESS.'],
+    ['my ip: 1234:ABCD:23AF:1111:2222:3333:0000:0000.', 'my ip: IP_ADDRESS.'],
     ['my ip: 1234:ABCD:23AF:1111:2222:3333::!', 'my ip: IP_ADDRESS!'],
   ]);
 
@@ -191,7 +192,16 @@ describe('index.js', function () {
     expect(redactor.redact('I love cats, dogs, and cows')).toBe('I love ANIMAL, ANIMAL, and ANIMAL');
   });
 
-  TestCase('should replace digits', [['codeA: 123, codeB: 6789', 'codeA: 123, codeB: DIGITS']]);
+  it('should leave digit runs alone by default (digits is opt-in)', function () {
+    expect(redactor.redact('codeA: 123, codeB: 6789')).toBe('codeA: 123, codeB: 6789');
+  });
+
+  it('should replace digits when explicitly enabled', function () {
+    const withDigits = new SyncRedactor({
+      builtInRedactors: { digits: { enabled: true } },
+    });
+    expect(withDigits.redact('codeA: 123, codeB: 6789')).toBe('codeA: 123, codeB: DIGITS');
+  });
 
   TestCase('should replace URLs', [
     ['My homepage is http://example.com', 'My homepage is URL'],

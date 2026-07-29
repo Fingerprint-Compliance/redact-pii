@@ -28,6 +28,17 @@ function resolveBuiltInReplaceWith(
   return (builtInConfig && builtInConfig.replaceWith) || opts.globalReplaceWith || defaultReplaceWith;
 }
 
+/** Built-ins that are too aggressive for default use; enable explicitly via options. */
+const OPT_IN_BUILT_INS = new Set(['digits']);
+
+function isBuiltInRegexpEnabled(opts: CompositeRedactorOptions<any>, regexpName: string): boolean {
+  const builtInConfig = opts.builtInRedactors && (opts.builtInRedactors as any)[regexpName];
+  if (OPT_IN_BUILT_INS.has(regexpName)) {
+    return !!(builtInConfig && builtInConfig.enabled === true);
+  }
+  return !builtInConfig || builtInConfig.enabled !== false;
+}
+
 export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts: CompositeRedactorOptions<T> = {}) {
   const childRedactors: T extends SyncCustomRedactorConfig
     ? Array<ISyncRedactor>
@@ -38,11 +49,7 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
   }
 
   for (const regexpName of Object.keys(simpleRegexpBuiltIns)) {
-    if (
-      !opts.builtInRedactors ||
-      !(opts.builtInRedactors as any)[regexpName] ||
-      (opts.builtInRedactors as any)[regexpName].enabled !== false
-    ) {
+    if (isBuiltInRegexpEnabled(opts, regexpName)) {
       childRedactors.push(
         new SimpleRegexpRedactor({
           regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],

@@ -5,6 +5,24 @@ All notable changes to this project from 3.x.x onward will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Reduce false positives in built-in patterns** ([#4](https://github.com/Fingerprint-Compliance/redact-pii/issues/4)):
+  - `digits` is **opt-in** (`builtInRedactors.digits.enabled: true`); previously it redacted any 4+ digit run by default
+  - `zipcode` requires a US state code before 5-digit ZIP, or ZIP+4 form (avoids order/invoice IDs)
+  - `phoneNumber` requires structured phone shapes and avoids UUID / hex-adjacent matches
+  - `emailAddress` requires a dotted domain (no longer matches `a@b`)
+  - `password` no longer treats bare `secret:` labels as passwords (still matches `password:` / `pass:` / `passphrase:`)
+  - `ipAddress` recognizes common full and compressed IPv6 forms more consistently
+  - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
+- README documents remaining heuristic limitations
+
+### Tests
+
+- Added regression coverage for high-impact false positives
+
 ## [5.0.0][] - 2026-07-29
 
 ### Breaking changes

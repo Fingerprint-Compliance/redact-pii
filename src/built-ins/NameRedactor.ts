@@ -13,6 +13,14 @@ const genericName = new RegExp('( ?(([A-Z][a-z]+)|([A-Z]\\.)))+([,.]|[,.]?$)', '
 
 const wellKnownNames = new RegExp('\\b(\\s*)(\\s*(' + _wellKnownNames.join('|') + '))+\\b', 'gim');
 
+// Org / team signatures that look like capitalized names after greetings/closings.
+const nonPersonNamePattern =
+  /\b(Support|Team|Inc|Incorporated|LLC|Ltd|Corp|Corporation|Services|Service|Customer Experience|Help Desk|Helpdesk)\b/i;
+
+function isLikelyPersonName(matchedName: string): boolean {
+  return !nonPersonNamePattern.test(matchedName);
+}
+
 export class NameRedactor implements ISyncRedactor {
   constructor(private replaceWith = 'PERSON_NAME') {}
 
@@ -23,7 +31,11 @@ export class NameRedactor implements ISyncRedactor {
     while (greetingOrClosingMatch !== null) {
       genericName.lastIndex = greetingOrClosing.lastIndex;
       let genericNameMatch = genericName.exec(textToRedact);
-      if (genericNameMatch !== null && genericNameMatch.index === greetingOrClosing.lastIndex) {
+      if (
+        genericNameMatch !== null &&
+        genericNameMatch.index === greetingOrClosing.lastIndex &&
+        isLikelyPersonName(genericNameMatch[0])
+      ) {
         let suffix = genericNameMatch[5] === null ? '' : genericNameMatch[5];
         textToRedact =
           textToRedact.slice(0, genericNameMatch.index) +
