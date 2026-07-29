@@ -54,7 +54,7 @@ redactor.redactAsync('Hi David Johnson, Please give me a call at 555-555-5555').
   - usSocialSecurityNumber
   - zipcode
   - url
-  - digits
+  - digits (**opt-in** — see below; aggressive catch-all for long digit runs)
   - > **NOTE**: the built-in redaction rules are mostly applicable for identifying (US-)english PII.
     > Consider custom patterns (or an external service such as [Google Cloud DLP](https://cloud.google.com/dlp/) wired as a custom async redactor) if you have non-english PII to redact.
 - ability to add custom redaction regex patterns and complete custom redaction functions (both sync and async)
@@ -156,9 +156,41 @@ const redactor = new SyncRedactor({
 });
 ```
 
+### Enable the opt-in `digits` redactor
+
+The `digits` rule matches any run of 4+ digits (`\b\d{4,}\b`). That is useful as a last-resort catch-all but produces many false positives (years, ports, order IDs, partial account tokens). It is **disabled by default** and must be turned on explicitly:
+
+```js
+const redactor = new SyncRedactor({
+  builtInRedactors: {
+    digits: {
+      enabled: true
+    }
+  }
+});
+redactor.redact('codeB: 6789');
+// codeB: DIGITS
+```
+
 ### Using an external service as a custom redactor
 
 `GoogleDLPRedactor` was removed in 4.0.0 (along with the `@google-cloud/dlp` dependency). You can still use [Google Cloud DLP](https://cloud.google.com/dlp/) or any other service by implementing a custom async redactor with `redactAsync` and passing it to `AsyncRedactor` via `customRedactors` (see examples above). Use the official [`@google-cloud/dlp`](https://www.npmjs.com/package/@google-cloud/dlp) client (or another provider) directly in your own redactor.
+
+### Limitations and known heuristics
+
+These defaults aim to reduce false positives while still catching common US-English PII. They are **heuristics**, not a compliance guarantee:
+
+| Rule | Behavior / limitation |
+|------|------------------------|
+| **names** | Greeting/closing + capitalized words, plus a well-known first-name list. Company signatures like `Google Support` are skipped; many real names and non-English names will be missed or still mis-detected. |
+| **zipcode** | 5-digit ZIP only when preceded by a US state code (`NY 10002`), or ZIP+4 (`10002-1234`). Bare `90210` / order IDs are not redacted. |
+| **phoneNumber** | Structured 10-digit (optional country code) forms. Vanity / alphanumeric numbers are not supported. Adjacent alphanumerics (e.g. UUID fragments) are not matched. |
+| **emailAddress** | Requires a dotted domain (`user@host.tld`). Values like `a@b` are ignored. |
+| **password** / **username** | Label-based (`password:`, `pass:`, `user:`, …). Bare prose such as `The secret: is out` is not treated as a password. |
+| **creditCardNumber** | Pattern-based (16-digit / Amex / Diners shapes). No Luhn check — some non-PAN digit groups may still match. |
+| **ipAddress** | IPv4 and common IPv6 shapes; not a full IPv6 grammar. |
+| **digits** | Opt-in only (see above). |
+| **Locale** | Built-ins target US-English patterns; non-Latin scripts and international IDs need custom redactors. |
 
 ### Contributing
 
