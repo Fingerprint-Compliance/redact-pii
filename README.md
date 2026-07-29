@@ -3,7 +3,7 @@
 [![NPM Package](https://badge.fury.io/js/redact-pii.svg)](https://www.npmjs.com/package/redact-pii)
 [![Dependencies](https://david-dm.org/solvvy/redact-pii.svg)](https://david-dm.org/solvvy/redact-pii)
 
-> **NOTE**: Users of redact-pii@2.x.x please check the [Changelog](CHANGELOG.md) before upgrading .
+> **NOTE**: Check the [Changelog](CHANGELOG.md) before upgrading (including the **5.0.0** packaging change: `lib/` is no longer committed to git).
 
 Remove personally identifiable information from text. 
 
