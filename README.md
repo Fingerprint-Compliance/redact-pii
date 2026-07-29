@@ -26,6 +26,8 @@ const redactedText = redactor.redact('Hi David Johnson, Please give me a call at
 console.log(redactedText);
 ```
 
+`redact` and `redactAsync` always expect a `string`. Passing any other type throws a `TypeError`.
+
 ### Simple example (asynchronous / promise-based API)
 
 ```js
