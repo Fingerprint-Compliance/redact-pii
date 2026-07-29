@@ -1,5 +1,4 @@
 import { toSnakeCase } from '../src/utils';
-import { snakeCase } from 'lodash';
 
 describe('utils.ts', function () {
   it('toSnakeCase should convert to snake case', function () {

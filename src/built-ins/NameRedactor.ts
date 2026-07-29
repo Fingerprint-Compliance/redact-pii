@@ -7,7 +7,7 @@ const closingRegex =
 
 const greetingOrClosing = new RegExp(
   '(((' + greetingRegex.source + ')|(' + closingRegex.source + '\\s*[,.!]*))[\\s-]*)',
-  'gi'
+  'gi',
 );
 const genericName = new RegExp('( ?(([A-Z][a-z]+)|([A-Z]\\.)))+([,.]|[,.]?$)', 'gm');
 
