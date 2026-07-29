@@ -1,13 +1,17 @@
 {
   "name": "redact-pii",
-  "version": "4.1.0",
+  "version": "5.0.0",
   "description": "Remove personally identifiable information from text.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "del lib && tsc --pretty",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run verify_all && npm run build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run verify_all",
     "verify_all": "npm run typecheck && npm test && npm run test_prettier",
     "test": "jest",
     "test_prettier": "prettier './+(src|test)/**/*.+(js|ts|tsx)' --list-different",
