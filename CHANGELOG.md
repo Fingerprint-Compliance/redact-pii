@@ -19,11 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
 - README documents remaining heuristic limitations
 
+### Fixed
+
+- Distinct redactor instances no longer share mutable `RegExp` match state ([#5](https://github.com/Fingerprint-Compliance/redact-pii/issues/5))
+- `redact` / `redactAsync` throw a clear `TypeError` for non-string input ([#6](https://github.com/Fingerprint-Compliance/redact-pii/issues/6))
+- `SimpleRegexpRedactor` requires an explicit `replaceWith` (no empty default); drop redundant `.toUpperCase()` after `toSnakeCase` ([#7](https://github.com/Fingerprint-Compliance/redact-pii/issues/7))
+- Built-in regexp redactors use an explicit application order instead of `Object.keys` export order ([#8](https://github.com/Fingerprint-Compliance/redact-pii/issues/8))
+
 ### Tests
 
 - Added regression coverage for high-impact false positives
 
-## [5.0.0][] - 2026-07-29
+## [5.0.0] - 2026-07-29
 
 ### Breaking changes
 
@@ -47,79 +54,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `prepare` runs `npm run build` so git installs and local installs produce `lib/` automatically.
 - `prepublishOnly` runs `verify_all` (typecheck, tests, prettier); the build runs via `prepare` before pack/publish.
 
-## [4.0.1][] - 2026-02-25
+## [4.1.0] - 2026-02-25
 
-- removing lodash usage in favour of a custom `toSnakeCase` function
+### Changed
 
-## [4.0.3][] - 2026-02-24
+- Remove lodash in favour of a custom `toSnakeCase` helper
+- Add Dependabot configuration
+- Update GitHub Actions workflow
 
-- run `npm audit fix` to update dependencies and fix security vulnerabilities
+## [4.0.3] - 2026-02-24
 
-## [4.0.0][] - 2021-09-09
-- BREAKING CHANGE: removing @google-cloud/dlp dependency
-- Improvement: adding `lib` directory to git, in order to use this library as is,
-  in the compiled version
-- Fix: improving regex pattern including dashes in email domain addresses
-- Fix: improving url regex in href links
+### Security
 
-## [3.4.0][] - 2022-07-29
+- Run `npm audit fix` to update dependencies and address security vulnerabilities
+
+## [4.0.2] - 2022-08-01
+
+### Changed
+
+- Dependency and lockfile maintenance after the 4.0 packaging line
+
+## [4.0.1] - 2022-01-04
+
+### Changed
+
+- Upgrade `package-lock.json` to a newer npm lockfile format
+
+## [4.0.0] - 2021-09-09
+
+### Breaking changes
+
+- Remove `@google-cloud/dlp` dependency and built-in Google DLP redactor
+
+### Changed
+
+- Add compiled `lib/` directory to git so the library can be consumed from source in compiled form
+- Improve regex pattern including dashes in email domain addresses
+- Improve URL regex in href links
+
+## [3.4.0] - 2022-07-29
 
 - npm package updates including @google-cloud/dlp
 
-## [3.3.0][] - 2022-06-27
+## [3.3.0] - 2022-06-27
 
 - Updating dependent libraries to latest
 
-## [3.2.3][] - 2019-09-12
+## [3.2.3] - 2019-09-12
 
 - Downgrade @google-cloud/dlp to avoid memory leak in recent versions
 
-## [3.2.2][] - 2019-08-12
+## [3.2.2] - 2019-08-12
 
 - Fix bug in Google DLP Redactor with tokens overlapping and repeating
 - Update dependencies to get security fixes
 
-## [3.2.1][] - 2019-06-20
+## [3.2.1] - 2019-06-20
 
-- Tweak the built-in US SSN regex to work better on large input by removing the optional delimters (the digits regex will already cover this situation)
+- Tweak the built-in US SSN regex to work better on large input by removing the optional delimiters (the digits regex will already cover this situation)
 
-## [3.2.0][] - 2019-05-21
+## [3.2.0] - 2019-05-21
 
 - Add enhancement to automatically split Google DLP input that is too large into smaller batches. This can be disabled with the `disableAutoBatchWhenContentSizeExceedsLimit` option.
 
-## [3.1.0][] - 2019-05-04
+## [3.1.0] - 2019-05-04
 
 - BREAKING: rename `replacementValue` param of built-in redaction config to `replaceWith` for consistency
 
-## [3.0.2][] - 2019-05-04
+## [3.0.2] - 2019-05-04
 
 - fix parameter typo in docs (`enable` -> `enabled`)
 - fix `TypeError` when attempting to disable built-in redactors
 
-## [3.0.1][] - 2019-04-29
+## [3.0.1] - 2019-04-29
 
 - Fix `Cannot find module './well-known-names.json'` error by making sure the file gets properly packaged
 
-## [3.0.0][] - 2019-04-21
+## [3.0.0] - 2019-04-21
 
 - This version is an almost complete rewrite from prior versions and **breaks** the prior API contract. In summary the changes are:
 - Library is now written in TypeScript
-- Introduces seperate API for sync and async redaction via seperate `SyncRedactor` and `AsyncRedactor` classes and seperate `.redact` and `.redactAsync` methods.
-- **Important Breaking Change:** The `redact` and `redactSync` methods now always expect a `string`. Passing anything else causes undefined behaviour and _may_ cause an exception. Prior versions of the library used to simply return the original value "untouched" if it wasn't a `string`.
-- Google Cloud DLP redaction is now a seperate redaction class that has to be explicitly imported and instantiated (`new GoogleDLPRedactor()`)
+- Introduces separate API for sync and async redaction via separate `SyncRedactor` and `AsyncRedactor` classes and separate `.redact` and `.redactAsync` methods.
+- **Important Breaking Change:** The `redact` and `redactAsync` methods now always expect a `string`. Passing anything else causes undefined behaviour and _may_ cause an exception. Prior versions of the library used to simply return the original value "untouched" if it wasn't a `string`.
+- Google Cloud DLP redaction is now a separate redaction class that has to be explicitly imported and instantiated (`new GoogleDLPRedactor()`)
   in order to use it.
 - Google Cloud DLP redaction does not have an implicit, hard-coded 5000ms timeout anymore. If you want to set a timeout for DLP calls you have to implement it yourself. In case you're using `bluebird` as promise library consider using `.timeout`.
 
 [Unreleased]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v5.0.0...HEAD
 [5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...v5.0.0
-[4.0.1]: https://github.com/solvvy/redact-pii/compare/v4.0.0...v4.0.1
-[4.0.0]: https://github.com/solvvy/redact-pii/compare/v3.2.3...v4.0.0
-[3.2.3]: https://github.com/solvvy/redact-pii/compare/v3.2.2...v3.2.3
-[3.2.2]: https://github.com/solvvy/redact-pii/compare/v3.2.1...v3.2.2
-[3.2.1]: https://github.com/solvvy/redact-pii/compare/v3.2.0...v3.2.1
-[3.2.0]: https://github.com/solvvy/redact-pii/compare/v3.1.0...v3.2.0
-[3.1.0]: https://github.com/solvvy/redact-pii/compare/v3.0.1...v3.1.0
-[3.0.1]: https://github.com/solvvy/redact-pii/compare/v3.0.0...v3.0.1
-[3.0.0]: https://github.com/solvvy/redact-pii/tree/v3.0.0
-[unreleased]: https://github.com/solvvy/redact-pii/compare/v3.3.0-beta.1...HEAD
-[3.3.0-beta.1]: https://github.com/solvvy/redact-pii/tree/v3.3.0-beta.1
+[4.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.3...v4.1.0
+[4.0.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.2...v4.0.3
+[4.0.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.1...v4.0.2
+[4.0.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.0...v4.0.1
+[4.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.4.0...v4.0.0
+[3.4.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.3.0...v3.4.0
+[3.3.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.3...v3.3.0
+[3.2.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.2...v3.2.3
+[3.2.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.1...v3.2.2
+[3.2.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.0...v3.2.1
+[3.2.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.1.0...v3.2.0
+[3.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.2...v3.1.0
+[3.0.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.1...v3.0.2
+[3.0.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.0...v3.0.1
+[3.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/releases/tag/v3.0.0
