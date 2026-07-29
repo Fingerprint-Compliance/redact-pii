@@ -31,6 +31,10 @@
     "ts-jest": "29.4.12",
     "typescript": "5.9.3"
   },
+  "overrides": {
+    "brace-expansion": "5.0.8",
+    "minimatch": "10.2.6"
+  },
   "prettier": {
     "singleQuote": true,
     "printWidth": 120
