@@ -1,14 +1,14 @@
 import { ISyncRedactor } from '../types';
-import { toSnakeCase } from '../utils';
 
 export class SimpleRegexpRedactor implements ISyncRedactor {
   regexpMatcher: RegExp;
   replaceWith: string;
 
   constructor({
-    replaceWith = toSnakeCase().toUpperCase(),
+    replaceWith,
     regexpPattern: regexpMatcher,
   }: {
+    /** Required replacement label (e.g. `PHONE_NUMBER`). No empty default. */
     replaceWith: string;
     regexpPattern: RegExp;
   }) {

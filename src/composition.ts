@@ -53,7 +53,7 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
       childRedactors.push(
         new SimpleRegexpRedactor({
           regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],
-          replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName).toUpperCase()),
+          replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName)),
         }),
       );
     }
