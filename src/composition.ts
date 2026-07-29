@@ -22,7 +22,7 @@ function normalizeCustomRedactorConfig(redactorConfig: any) {
 function resolveBuiltInReplaceWith(
   opts: CompositeRedactorOptions<any>,
   redactorName: string,
-  defaultReplaceWith: string
+  defaultReplaceWith: string,
 ): string {
   const builtInConfig = opts.builtInRedactors && (opts.builtInRedactors as any)[redactorName];
   return (builtInConfig && builtInConfig.replaceWith) || opts.globalReplaceWith || defaultReplaceWith;
@@ -47,7 +47,7 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
         new SimpleRegexpRedactor({
           regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],
           replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName).toUpperCase()),
-        })
+        }),
       );
     }
   }

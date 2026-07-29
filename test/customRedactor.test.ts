@@ -55,15 +55,15 @@ describe('index.js', function () {
       await expect(compositeRedactorWithDLP.redactAsync('我的名字是王')).resolves.toBe('我的名字是王');
       await expect(compositeRedactorWithDLP.redactAsync('我的卡号是 1234')).resolves.toBe('PERSON_NAME是 1234');
       await expect(compositeRedactorWithDLP.redactAsync('我的电话是 444-3332-343')).resolves.toBe(
-        '我的电话是 PHONE_NUMBER'
+        '我的电话是 PHONE_NUMBER',
       );
       await expect(compositeRedactorWithDLP.redactAsync("Hey it's David Johnson with 1234")).resolves.toBe(
-        "Hey it's LAST_NAME with 1234"
+        "Hey it's LAST_NAME with 1234",
       );
       await expect(
         compositeRedactorWithDLP.redactAsync(
-          'Hi banana, my credit card is 4111111111111111 and I need help. Thanks, John'
-        )
+          'Hi banana, my credit card is 4111111111111111 and I need help. Thanks, John',
+        ),
       ).resolves.toBe('Hi FOOD, my credit card is CREDIT_CARD_NUMBER and I need help. Thanks, LAST_NAME');
     });
 });
