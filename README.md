@@ -8,7 +8,7 @@ Remove personally identifiable information from text.
 
 ### Prerequisites
 
-This library is primarily written for Node.js but it should work in the browser as well.
+This library is primarily written for Node.js but it should work in the browser as well: the published build targets ES2016 and does not `require` Node built-ins (guarded by a compatibility smoke test in CI). Bundle with your usual tool (webpack, esbuild, Rollup, etc.) if you need a browser artifact.
 It is written in TypeScript and compiles to ES2016. Supported Node.js versions are **20 and newer** (see the `engines` field in `package.json`). CI runs on Node 20, 22, and 24.
 
 ### Simple example (synchronous API)
