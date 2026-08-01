@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   | Install from git / GitHub | Run a normal `npm install` in this repo (or of the git dependency). The `prepare` script builds `lib/`. You need a Node.js environment with the package’s devDependencies available (TypeScript, etc.). |
   | Local clone / development | Run `npm install` (builds via `prepare`) or `npm run build` after pulling. Do not commit `lib/`. |
 
-- Package version is **5.0.0** to reflect the packaging / install-from-git break. The public TypeScript/JavaScript API (`SyncRedactor`, `AsyncRedactor`, options, built-in patterns) is unchanged in this release.
+- Package version is **5.0.0** to reflect the packaging / install-from-git break. Class names, option shapes, and the built-in redactor surface are otherwise the same; see **Fixed** / **Changed** for behavior hardenings in this release (e.g. non-string input, `replaceWith`, redactor order, and false-positive pattern tweaks).
 
 ### Changed
 
