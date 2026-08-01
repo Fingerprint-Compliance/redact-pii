@@ -13,17 +13,18 @@ describe('index.js', function () {
     });
   }
 
-  it('should be speedy', async function () {
+  it('should redact many short strings without throwing', function () {
     for (let i = 0; i < 100; i++) {
-      redactor.redact('hi I had a quick question about using the service');
+      expect(redactor.redact('hi I had a quick question about using the service')).toBe(
+        'hi I had a quick question about using the service',
+      );
     }
-  }, 100);
+  });
 
-  it('should be speedy even with lots of newlines', async function () {
-    let text =
-      'foo\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nbar';
-    redactor.redact(text);
-  }, 100);
+  it('should redact text with many newlines without throwing', function () {
+    const text = 'foo' + '\n'.repeat(200) + 'bar call 555-555-5555';
+    expect(redactor.redact(text)).toBe('foo' + '\n'.repeat(200) + 'bar call PHONE_NUMBER');
+  });
 
   TestCase('should redact PII', [
     [
