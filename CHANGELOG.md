@@ -38,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
 - README documents remaining heuristic limitations
 - Declare `engines.node` as `>=20` and run CI on Node 20 / 22 / 24 ([#15](https://github.com/Fingerprint-Compliance/redact-pii/issues/15))
+- Well-known first-name matching uses a `Set` + token scan instead of one giant alternation regex ([#16](https://github.com/Fingerprint-Compliance/redact-pii/issues/16))
+- `package.json` includes a modern `exports` map (CJS + types; no dual ESM build) ([#16](https://github.com/Fingerprint-Compliance/redact-pii/issues/16))
 
 ### Fixed
 
@@ -53,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tests
 
 - Added regression coverage for high-impact false positives
+- Housekeeping ([#16](https://github.com/Fingerprint-Compliance/redact-pii/issues/16)): drop unused `TestCase.only`; replace flaky 100ms “speedy” tests with behavior assertions; add browser/non-Node lib smoke checks
 
 ## [4.1.0] - 2026-02-25
 
