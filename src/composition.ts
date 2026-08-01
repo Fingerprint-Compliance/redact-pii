@@ -10,6 +10,25 @@ import {
 } from './types';
 import { isSimpleRegexpCustomRedactorConfig, toSnakeCase } from './utils';
 
+/** Explicit application order for regexp built-ins (more specific before broader). */
+export const BUILT_IN_REGEXP_REDACTOR_ORDER = [
+  'creditCardNumber',
+  'streetAddress',
+  'zipcode',
+  'phoneNumber',
+  'ipAddress',
+  'usSocialSecurityNumber',
+  'emailAddress',
+  'username',
+  'password',
+  'credentials',
+  'url',
+  // Opt-in catch-all; last among regexp rules so specific patterns win first.
+  'digits',
+] as const;
+
+type BuiltInRegexpName = (typeof BUILT_IN_REGEXP_REDACTOR_ORDER)[number];
+
 function normalizeCustomRedactorConfig(redactorConfig: any) {
   return isSimpleRegexpCustomRedactorConfig(redactorConfig)
     ? new SimpleRegexpRedactor({
@@ -29,9 +48,9 @@ function resolveBuiltInReplaceWith(
 }
 
 /** Built-ins that are too aggressive for default use; enable explicitly via options. */
-const OPT_IN_BUILT_INS = new Set(['digits']);
+const OPT_IN_BUILT_INS = new Set<BuiltInRegexpName>(['digits']);
 
-function isBuiltInRegexpEnabled(opts: CompositeRedactorOptions<any>, regexpName: string): boolean {
+function isBuiltInRegexpEnabled(opts: CompositeRedactorOptions<any>, regexpName: BuiltInRegexpName): boolean {
   const builtInConfig = opts.builtInRedactors && (opts.builtInRedactors as any)[regexpName];
   if (OPT_IN_BUILT_INS.has(regexpName)) {
     return !!(builtInConfig && builtInConfig.enabled === true);
@@ -48,12 +67,12 @@ export function composeChildRedactors<T extends AsyncCustomRedactorConfig>(opts:
     opts.customRedactors.before.map(normalizeCustomRedactorConfig).forEach((redactor) => childRedactors.push(redactor));
   }
 
-  for (const regexpName of Object.keys(simpleRegexpBuiltIns)) {
+  for (const regexpName of BUILT_IN_REGEXP_REDACTOR_ORDER) {
     if (isBuiltInRegexpEnabled(opts, regexpName)) {
       childRedactors.push(
         new SimpleRegexpRedactor({
-          regexpPattern: (simpleRegexpBuiltIns as any)[regexpName],
-          replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName).toUpperCase()),
+          regexpPattern: simpleRegexpBuiltIns[regexpName],
+          replaceWith: resolveBuiltInReplaceWith(opts, regexpName, toSnakeCase(regexpName)),
         }),
       );
     }

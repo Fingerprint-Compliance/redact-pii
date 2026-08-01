@@ -5,13 +5,9 @@ const greetingRegex = /(^|\.\s+)(dear|hi|hello|greetings|hey|hey there)/gi;
 const closingRegex =
   /(thx|thanks|thank you|regards|best|[a-z]+ly|[a-z]+ regards|all the best|happy [a-z]+ing|take care|have a [a-z]+ (weekend|night|day))/gi;
 
-const greetingOrClosing = new RegExp(
-  '(((' + greetingRegex.source + ')|(' + closingRegex.source + '\\s*[,.!]*))[\\s-]*)',
-  'gi',
-);
-const genericName = new RegExp('( ?(([A-Z][a-z]+)|([A-Z]\\.)))+([,.]|[,.]?$)', 'gm');
-
-const wellKnownNames = new RegExp('\\b(\\s*)(\\s*(' + _wellKnownNames.join('|') + '))+\\b', 'gim');
+const greetingOrClosingSource = '(((' + greetingRegex.source + ')|(' + closingRegex.source + '\\s*[,.!]*))[\\s-]*)';
+const genericNameSource = '( ?(([A-Z][a-z]+)|([A-Z]\\.)))+([,.]|[,.]?$)';
+const wellKnownNamesSource = '\\b(\\s*)(\\s*(' + _wellKnownNames.join('|') + '))+\\b';
 
 // Org / team signatures that look like capitalized names after greetings/closings.
 const nonPersonNamePattern =
@@ -22,9 +18,16 @@ function isLikelyPersonName(matchedName: string): boolean {
 }
 
 export class NameRedactor implements ISyncRedactor {
+  // Instance-owned regexes so concurrent redactors do not share lastIndex state.
+  private greetingOrClosing = new RegExp(greetingOrClosingSource, 'gi');
+  private genericName = new RegExp(genericNameSource, 'gm');
+  private wellKnownNames = new RegExp(wellKnownNamesSource, 'gim');
+
   constructor(private replaceWith = 'PERSON_NAME') {}
 
   redact(textToRedact: string) {
+    const greetingOrClosing = this.greetingOrClosing;
+    const genericName = this.genericName;
     greetingOrClosing.lastIndex = 0;
     genericName.lastIndex = 0;
     let greetingOrClosingMatch = greetingOrClosing.exec(textToRedact);
@@ -46,7 +49,7 @@ export class NameRedactor implements ISyncRedactor {
       greetingOrClosingMatch = greetingOrClosing.exec(textToRedact);
     }
 
-    textToRedact = textToRedact.replace(wellKnownNames, '$1' + this.replaceWith);
+    textToRedact = textToRedact.replace(this.wellKnownNames, '$1' + this.replaceWith);
 
     return textToRedact;
   }

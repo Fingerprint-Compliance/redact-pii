@@ -7,6 +7,9 @@
   "files": [
     "lib"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "del lib && tsc --pretty",
     "typecheck": "tsc --noEmit",
@@ -30,6 +33,10 @@
     "prettier": "3.9.6",
     "ts-jest": "29.4.12",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.8",
+    "minimatch": "10.2.6"
   },
   "prettier": {
     "singleQuote": true,

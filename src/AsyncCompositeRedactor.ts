@@ -14,6 +14,9 @@ export class AsyncCompositeRedactor implements IAsyncRedactor {
   }
 
   redactAsync = async (textToRedact: string) => {
+    if (typeof textToRedact !== 'string') {
+      throw new TypeError(`AsyncRedactor.redactAsync expected a string, got ${typeof textToRedact}`);
+    }
     for (const redactor of this.childRedactors) {
       if (isSyncRedactor(redactor)) {
         textToRedact = redactor.redact(textToRedact);

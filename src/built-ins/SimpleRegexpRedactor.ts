@@ -1,19 +1,20 @@
 import { ISyncRedactor } from '../types';
-import { toSnakeCase } from '../utils';
 
 export class SimpleRegexpRedactor implements ISyncRedactor {
   regexpMatcher: RegExp;
   replaceWith: string;
 
   constructor({
-    replaceWith = toSnakeCase().toUpperCase(),
+    replaceWith,
     regexpPattern: regexpMatcher,
   }: {
+    /** Required replacement label (e.g. `PHONE_NUMBER`). No empty default. */
     replaceWith: string;
     regexpPattern: RegExp;
   }) {
     this.replaceWith = replaceWith;
-    this.regexpMatcher = regexpMatcher;
+    // Clone so each redactor owns its lastIndex / match state (module patterns are shared).
+    this.regexpMatcher = new RegExp(regexpMatcher.source, regexpMatcher.flags);
   }
 
   redact(textToRedact: string) {

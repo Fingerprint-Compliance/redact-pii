@@ -1,16 +1,15 @@
 # redact-pii
 
 [![NPM Package](https://badge.fury.io/js/redact-pii.svg)](https://www.npmjs.com/package/redact-pii)
-[![Dependencies](https://david-dm.org/solvvy/redact-pii.svg)](https://david-dm.org/solvvy/redact-pii)
 
 > **NOTE**: Check the [Changelog](CHANGELOG.md) before upgrading (including the **5.0.0** packaging change: `lib/` is no longer committed to git).
 
 Remove personally identifiable information from text. 
 
-### Prerequesites
+### Prerequisites
 
-This library is primarily written for node.js but it should work in the browser as well.
-It is written in TypeScript and compiles to ES2017. The library makes use of `async` functions and hence needs node.js 8.0.0 or higher (or a modern browser). If this is a problem for you please open an issue and we may consider adapting the compiler settings to support older node.js versions.
+This library is primarily written for Node.js but it should work in the browser as well.
+It is written in TypeScript and compiles to ES2016. Supported Node.js versions are **20 and newer** (see the `engines` field in `package.json`). CI runs on Node 20, 22, and 24.
 
 ### Simple example (synchronous API)
 
@@ -25,6 +24,8 @@ const redactedText = redactor.redact('Hi David Johnson, Please give me a call at
 // Hi NAME, Please give me a call at PHONE_NUMBER
 console.log(redactedText);
 ```
+
+`redact` and `redactAsync` always expect a `string`. Passing any other type throws a `TypeError`.
 
 ### Simple example (asynchronous / promise-based API)
 

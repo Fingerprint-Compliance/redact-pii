@@ -13,6 +13,9 @@ export class SyncCompositeRedactor implements ISyncRedactor {
   }
 
   redact = (textToRedact: string) => {
+    if (typeof textToRedact !== 'string') {
+      throw new TypeError(`SyncRedactor.redact expected a string, got ${typeof textToRedact}`);
+    }
     for (const redactor of this.childRedactors) {
       textToRedact = redactor.redact(textToRedact);
     }
