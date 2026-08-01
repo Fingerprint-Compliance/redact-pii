@@ -19,30 +19,100 @@ function isLikelyPersonName(matchedName: string): boolean {
   return !nonPersonNamePattern.test(matchedName);
 }
 
-/** Replace runs of well-known name tokens (case-insensitive), same as the old alternation regex. */
-function redactWellKnownNames(text: string, replaceWith: string): string {
-  // Local /g regex so concurrent redacts do not share lastIndex.
-  const wordTokenPattern = /[A-Za-z]+/g;
-  type Span = { start: number; end: number };
-  const spans: Span[] = [];
-  let match: RegExpExecArray | null;
-  while ((match = wordTokenPattern.exec(text)) !== null) {
-    if (!wellKnownNamesSet.has(match[0].toLowerCase())) {
-      continue;
-    }
-    const start = match.index;
-    const end = match.index + match[0].length;
-    const previous = spans[spans.length - 1];
-    // Consecutive well-known names with only whitespace between collapse to one replacement.
-    if (previous && /^\s*$/.test(text.slice(previous.end, start))) {
-      previous.end = end;
-    } else {
-      spans.push({ start, end });
+/** JS `\w` / word-boundary class used by the historical alternation regex. */
+function isWordChar(ch: string | undefined): boolean {
+  return ch !== undefined && /[A-Za-z0-9_]/.test(ch);
+}
+
+/** True when a `\b` exists between `index - 1` and `index` (or at the string edges). */
+function isWordBoundaryAt(text: string, index: number): boolean {
+  const leftWord = index > 0 && isWordChar(text[index - 1]);
+  const rightWord = index < text.length && isWordChar(text[index]);
+  return leftWord !== rightWord;
+}
+
+/**
+ * Longest well-known name prefix at `start` (letters only, case-insensitive).
+ * Returns length in characters, or 0 if none.
+ */
+function longestKnownNameLength(text: string, start: number): number {
+  let maxEnd = start;
+  while (maxEnd < text.length && /[A-Za-z]/.test(text[maxEnd])) {
+    maxEnd++;
+  }
+  for (let len = maxEnd - start; len >= 1; len--) {
+    if (wellKnownNamesSet.has(text.slice(start, start + len).toLowerCase())) {
+      return len;
     }
   }
+  return 0;
+}
+
+/**
+ * Match the historical pattern `\b(name(\s*name)*)\b` using the Set:
+ * - start only on a letter at a JS word boundary (preserve surrounding spaces;
+ *   avoids swallowing ` user_john` / identifier glue)
+ * - allow consecutive names with optional whitespace, including none (`davidjohn`)
+ * Returns exclusive end index, or -1 if no match at `start`.
+ */
+function matchWellKnownNameRun(text: string, start: number): number {
+  if (!/[A-Za-z]/.test(text[start] || '') || !isWordBoundaryAt(text, start)) {
+    return -1;
+  }
+
+  let pos = start;
+  let namesMatched = 0;
+
+  while (pos < text.length) {
+    let p = pos;
+    if (namesMatched > 0) {
+      // Between names: optional whitespace only (including none).
+      while (p < text.length && /\s/.test(text[p])) {
+        p++;
+      }
+    }
+    if (p >= text.length || !/[A-Za-z]/.test(text[p])) {
+      break;
+    }
+
+    const nameLen = longestKnownNameLength(text, p);
+    if (nameLen === 0) {
+      break;
+    }
+    pos = p + nameLen;
+    namesMatched++;
+  }
+
+  if (namesMatched === 0) {
+    return -1;
+  }
+  if (!isWordBoundaryAt(text, pos)) {
+    return -1;
+  }
+  return pos;
+}
+
+/**
+ * Replace runs of well-known names (case-insensitive) with the same `\b` semantics
+ * as the old alternation regex, without compiling an ~86k-character pattern.
+ */
+function redactWellKnownNames(text: string, replaceWith: string): string {
+  type Span = { start: number; end: number };
+  const spans: Span[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const end = matchWellKnownNameRun(text, i);
+    if (end > i) {
+      spans.push({ start: i, end });
+      i = end;
+      continue;
+    }
+    i++;
+  }
+
   let result = text;
-  for (let i = spans.length - 1; i >= 0; i--) {
-    const { start, end } = spans[i];
+  for (let s = spans.length - 1; s >= 0; s--) {
+    const { start, end } = spans[s];
     result = result.slice(0, start) + replaceWith + result.slice(end);
   }
   return result;
