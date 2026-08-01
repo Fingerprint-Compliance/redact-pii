@@ -13,14 +13,6 @@ describe('index.js', function () {
     });
   }
 
-  TestCase.only = function (description: string, thingsToTest: Array<InputAssertionTuple>) {
-    it.only(description, () => {
-      for (const [input, expected] of thingsToTest) {
-        expect(redactor.redact(input)).toBe(expected);
-      }
-    });
-  };
-
   it('should be speedy', async function () {
     for (let i = 0; i < 100; i++) {
       redactor.redact('hi I had a quick question about using the service');
