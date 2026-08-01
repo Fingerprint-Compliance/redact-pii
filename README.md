@@ -27,6 +27,8 @@ console.log(redactedText);
 
 `redact` and `redactAsync` always expect a `string`. Passing any other type throws a `TypeError`.
 
+The published package is **CommonJS** (`main` / `exports.require`). A modern `exports` map is provided for Node resolution; there is no separate ESM build (avoids dual-package hazards). Bundlers can still consume the CJS build.
+
 ### Simple example (asynchronous / promise-based API)
 
 ```js

@@ -3,7 +3,16 @@
   "version": "5.0.0",
   "description": "Remove personally identifiable information from text.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "typings": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "lib"
   ],
