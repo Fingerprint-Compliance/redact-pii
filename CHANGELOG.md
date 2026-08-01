@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ipAddress` recognizes common full and compressed IPv6 forms more consistently
   - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
 - README documents remaining heuristic limitations
+- Declare `engines.node` as `>=20` and run CI on Node 20 / 22 / 24 ([#15](https://github.com/Fingerprint-Compliance/redact-pii/issues/15))
 
 ### Fixed
 
@@ -25,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `redact` / `redactAsync` throw a clear `TypeError` for non-string input ([#6](https://github.com/Fingerprint-Compliance/redact-pii/issues/6))
 - `SimpleRegexpRedactor` requires an explicit `replaceWith` (no empty default); drop redundant `.toUpperCase()` after `toSnakeCase` ([#7](https://github.com/Fingerprint-Compliance/redact-pii/issues/7))
 - Built-in regexp redactors use an explicit application order instead of `Object.keys` export order ([#8](https://github.com/Fingerprint-Compliance/redact-pii/issues/8))
+
+### Security
+
+- Pin transitive `brace-expansion` / `minimatch` via npm `overrides` so `npm audit` is clean for the current dev tree ([#14](https://github.com/Fingerprint-Compliance/redact-pii/issues/14))
 
 ### Tests
 
@@ -140,20 +145,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in order to use it.
 - Google Cloud DLP redaction does not have an implicit, hard-coded 5000ms timeout anymore. If you want to set a timeout for DLP calls you have to implement it yourself. In case you're using `bluebird` as promise library consider using `.timeout`.
 
-[Unreleased]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v5.0.0...HEAD
-[5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...v5.0.0
+[Unreleased]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...HEAD
+[5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...HEAD
 [4.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.3...v4.1.0
 [4.0.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.2...v4.0.3
 [4.0.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.1...v4.0.2
 [4.0.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.0...v4.0.1
-[4.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.4.0...v4.0.0
-[3.4.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.3.0...v3.4.0
-[3.3.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.3...v3.3.0
-[3.2.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.2...v3.2.3
-[3.2.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.1...v3.2.2
-[3.2.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.2.0...v3.2.1
-[3.2.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.1.0...v3.2.0
-[3.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.2...v3.1.0
-[3.0.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.1...v3.0.2
-[3.0.1]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.0...v3.0.1
+[4.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.1.0...v4.0.0
+[3.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/releases/tag/v3.0.0
