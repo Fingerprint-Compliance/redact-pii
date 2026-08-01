@@ -5,10 +5,29 @@ All notable changes to this project from 3.x.x onward will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.0.0] - Unreleased
+
+### Breaking changes
+
+- **Compiled `lib/` is no longer committed to git.**  
+  Since 4.0.0 the built JavaScript output lived in the repository so the package could be consumed from git without a build step. That made every TypeScript or source change require a matching `lib/` commit and was easy to get out of sync.
+
+  **What this means for you:**
+
+  | Install method | Action required |
+  |----------------|-----------------|
+  | `npm install redact-pii` (npm registry) | None. The published package still ships prebuilt `lib/` (built on publish). |
+  | Install from git / GitHub | Run a normal `npm install` in this repo (or of the git dependency). The `prepare` script builds `lib/`. You need a Node.js environment with the package’s devDependencies available (TypeScript, etc.). |
+  | Local clone / development | Run `npm install` (builds via `prepare`) or `npm run build` after pulling. Do not commit `lib/`. |
+
+- Package version is **5.0.0** to reflect the packaging / install-from-git break. The public TypeScript/JavaScript API (`SyncRedactor`, `AsyncRedactor`, options, built-in patterns) is unchanged in this release.
 
 ### Changed
 
+- `lib/` is listed in `.gitignore`.
+- `package.json` includes `"files": ["lib"]` so npm publishes only the build output (plus package metadata).
+- `prepare` runs `npm run build` so git installs and local installs produce `lib/` automatically.
+- `prepublishOnly` runs `verify_all` (typecheck, tests, prettier); the build runs via `prepare` before pack/publish.
 - **Reduce false positives in built-in patterns** ([#4](https://github.com/Fingerprint-Compliance/redact-pii/issues/4)):
   - `digits` is **opt-in** (`builtInRedactors.digits.enabled: true`); previously it redacted any 4+ digit run by default
   - `zipcode` requires a US state code before 5-digit ZIP, or ZIP+4 form (avoids order/invoice IDs)
@@ -34,30 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tests
 
 - Added regression coverage for high-impact false positives
-
-## [5.0.0] - 2026-07-29
-
-### Breaking changes
-
-- **Compiled `lib/` is no longer committed to git.**  
-  Since 4.0.0 the built JavaScript output lived in the repository so the package could be consumed from git without a build step. That made every TypeScript or source change require a matching `lib/` commit and was easy to get out of sync.
-
-  **What this means for you:**
-
-  | Install method | Action required |
-  |----------------|-----------------|
-  | `npm install redact-pii` (npm registry) | None. The published package still ships prebuilt `lib/` (built on publish). |
-  | Install from git / GitHub | Run a normal `npm install` in this repo (or of the git dependency). The `prepare` script builds `lib/`. You need a Node.js environment with the package’s devDependencies available (TypeScript, etc.). |
-  | Local clone / development | Run `npm install` (builds via `prepare`) or `npm run build` after pulling. Do not commit `lib/`. |
-
-- Package version is **5.0.0** to reflect the packaging / install-from-git break. The public TypeScript/JavaScript API (`SyncRedactor`, `AsyncRedactor`, options, built-in patterns) is unchanged in this release.
-
-### Changed
-
-- `lib/` is listed in `.gitignore`.
-- `package.json` includes `"files": ["lib"]` so npm publishes only the build output (plus package metadata).
-- `prepare` runs `npm run build` so git installs and local installs produce `lib/` automatically.
-- `prepublishOnly` runs `verify_all` (typecheck, tests, prettier); the build runs via `prepare` before pack/publish.
 
 ## [4.1.0] - 2026-02-25
 
@@ -145,7 +140,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in order to use it.
 - Google Cloud DLP redaction does not have an implicit, hard-coded 5000ms timeout anymore. If you want to set a timeout for DLP calls you have to implement it yourself. In case you're using `bluebird` as promise library consider using `.timeout`.
 
-[Unreleased]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...HEAD
 [5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...HEAD
 [4.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.3...v4.1.0
 [4.0.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.2...v4.0.3
