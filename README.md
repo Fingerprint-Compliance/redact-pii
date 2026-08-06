@@ -1,21 +1,25 @@
 # redact-pii
 
-[![NPM Package](https://badge.fury.io/js/redact-pii.svg)](https://www.npmjs.com/package/redact-pii)
+[![GitHub release](https://img.shields.io/github/v/release/Fingerprint-Compliance/redact-pii)](https://github.com/Fingerprint-Compliance/redact-pii/releases)
 
-> **NOTE**: Check the [Changelog](CHANGELOG.md) before upgrading (including the **5.0.0** packaging change: `lib/` is no longer committed to git).
+> **NOTE**: From **5.0.0** this fork is distributed as a **GitHub tag / release only** (not published to the public npm `redact-pii` package). Check the [Changelog](CHANGELOG.md) before upgrading — `lib/` is no longer committed to git, Node 20+ is required, and several default redaction behaviors are stricter.
 
-Remove personally identifiable information from text. 
+Remove personally identifiable information from text.
 
 ### Prerequisites
 
 This library is primarily written for Node.js but it should work in the browser as well.
 It is written in TypeScript and compiles to ES2016. Supported Node.js versions are **20 and newer** (see the `engines` field in `package.json`). CI runs on Node 20, 22, and 24.
 
-### Simple example (synchronous API)
+### Install (from GitHub)
 
 ```
-npm install redact-pii
+npm install github:Fingerprint-Compliance/redact-pii#v5.0.0
 ```
+
+`npm install` runs the `prepare` script, which builds `lib/` (TypeScript and other devDependencies must be installable). For a local clone, run `npm install` or `npm run build` after pulling; do not commit `lib/`.
+
+### Simple example (synchronous API)
 
 ```js
 const { SyncRedactor } = require('redact-pii');

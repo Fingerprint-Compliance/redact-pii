@@ -5,7 +5,9 @@ All notable changes to this project from 3.x.x onward will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [5.0.0] - Unreleased
+## [5.0.0] - 2026-08-06
+
+**Distribution:** this release is a **GitHub tag / GitHub Release only**. It is not published to the npm registry under `redact-pii`. Install from this repository (see README).
 
 ### Breaking changes
 
@@ -16,35 +18,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   | Install method | Action required |
   |----------------|-----------------|
-  | `npm install redact-pii` (npm registry) | None. The published package still ships prebuilt `lib/` (built on publish). |
-  | Install from git / GitHub | Run a normal `npm install` in this repo (or of the git dependency). The `prepare` script builds `lib/`. You need a Node.js environment with the package’s devDependencies available (TypeScript, etc.). |
+  | Install from git / GitHub (supported path for this fork) | Use a git dependency (tag `v5.0.0` or branch). A normal `npm install` runs `prepare`, which builds `lib/`. You need a Node.js environment with this package’s devDependencies available (TypeScript, etc.). |
   | Local clone / development | Run `npm install` (builds via `prepare`) or `npm run build` after pulling. Do not commit `lib/`. |
+  | `npm install redact-pii` from the public npm registry | **Not this release.** Registry `redact-pii` is a different distribution line and is not updated by this GitHub release. |
 
-- Package version is **5.0.0** to reflect the packaging / install-from-git break. Class names, option shapes, and the built-in redactor surface are otherwise the same; see **Fixed** / **Changed** for behavior hardenings in this release (e.g. non-string input, `replaceWith`, redactor order, and false-positive pattern tweaks).
+- **Node.js 20+ required** (`engines.node`: `>=20`). CI runs on Node 20, 22, and 24 ([#15](https://github.com/Fingerprint-Compliance/redact-pii/issues/15)).
+- **`digits` is opt-in.** Runs of 4+ digits are no longer redacted by default. Enable with `builtInRedactors.digits.enabled: true`.
+- **Stricter built-in matching** (fewer false positives; less redaction on ambiguous input) ([#4](https://github.com/Fingerprint-Compliance/redact-pii/issues/4)):
+  - `zipcode` requires a US state code before 5-digit ZIP, or ZIP+4 form
+  - `phoneNumber` requires structured phone shapes and avoids UUID / hex-adjacent matches
+  - `emailAddress` requires a dotted domain (no longer matches `a@b`)
+  - `password` no longer treats bare `secret:` labels as passwords (still matches `password:` / `pass:` / `passphrase:`)
+  - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
+- **`redact` / `redactAsync` throw `TypeError` for non-string input** ([#6](https://github.com/Fingerprint-Compliance/redact-pii/issues/6)). Call sites that passed other types must coerce or guard first.
+- **`SimpleRegexpRedactor` requires an explicit `replaceWith`** (no empty default) ([#7](https://github.com/Fingerprint-Compliance/redact-pii/issues/7)).
+
+#### Upgrade from 4.x
+
+1. Install from this GitHub repo at tag `v5.0.0` (not the public npm `redact-pii` package for this line).
+2. Use **Node 20+**.
+3. After install/clone, ensure `lib/` is built (`npm install` / `prepare`).
+4. If you relied on default `digits` redaction, set `builtInRedactors.digits.enabled: true`.
+5. Re-check outputs for zip/phone/email/password/name edge cases — defaults are intentionally stricter.
+6. Ensure callers only pass strings into `redact` / `redactAsync`.
 
 ### Changed
 
 - `lib/` is listed in `.gitignore`.
-- `package.json` includes `"files": ["lib"]` so npm publishes only the build output (plus package metadata).
+- `package.json` includes `"files": ["lib"]` so a packed tarball contains only the build output (plus package metadata).
 - `prepare` runs `npm run build` so git installs and local installs produce `lib/` automatically.
 - `prepublishOnly` runs `verify_all` (typecheck, tests, prettier); the build runs via `prepare` before pack/publish.
-- **Reduce false positives in built-in patterns** ([#4](https://github.com/Fingerprint-Compliance/redact-pii/issues/4)):
-  - `digits` is **opt-in** (`builtInRedactors.digits.enabled: true`); previously it redacted any 4+ digit run by default
-  - `zipcode` requires a US state code before 5-digit ZIP, or ZIP+4 form (avoids order/invoice IDs)
-  - `phoneNumber` requires structured phone shapes and avoids UUID / hex-adjacent matches
-  - `emailAddress` requires a dotted domain (no longer matches `a@b`)
-  - `password` no longer treats bare `secret:` labels as passwords (still matches `password:` / `pass:` / `passphrase:`)
-  - `ipAddress` recognizes common full and compressed IPv6 forms more consistently
-  - `names` skips org-style signatures after greetings/closings (e.g. `Google Support`, `Acme Support`)
-- README documents remaining heuristic limitations
-- Declare `engines.node` as `>=20` and run CI on Node 20 / 22 / 24 ([#15](https://github.com/Fingerprint-Compliance/redact-pii/issues/15))
+- `ipAddress` recognizes common full and compressed IPv6 forms more consistently
+- README documents remaining heuristic limitations and GitHub-only install for this fork
+- Repository metadata points at [Fingerprint-Compliance/redact-pii](https://github.com/Fingerprint-Compliance/redact-pii)
 
 ### Fixed
 
 - Distinct redactor instances no longer share mutable `RegExp` match state ([#5](https://github.com/Fingerprint-Compliance/redact-pii/issues/5))
-- `redact` / `redactAsync` throw a clear `TypeError` for non-string input ([#6](https://github.com/Fingerprint-Compliance/redact-pii/issues/6))
-- `SimpleRegexpRedactor` requires an explicit `replaceWith` (no empty default); drop redundant `.toUpperCase()` after `toSnakeCase` ([#7](https://github.com/Fingerprint-Compliance/redact-pii/issues/7))
 - Built-in regexp redactors use an explicit application order instead of `Object.keys` export order ([#8](https://github.com/Fingerprint-Compliance/redact-pii/issues/8))
+- Drop redundant `.toUpperCase()` after `toSnakeCase` ([#7](https://github.com/Fingerprint-Compliance/redact-pii/issues/7))
 
 ### Security
 
@@ -140,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in order to use it.
 - Google Cloud DLP redaction does not have an implicit, hard-coded 5000ms timeout anymore. If you want to set a timeout for DLP calls you have to implement it yourself. In case you're using `bluebird` as promise library consider using `.timeout`.
 
-[5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...HEAD
+[5.0.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.1.0...v5.0.0
 [4.1.0]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.3...v4.1.0
 [4.0.3]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.2...v4.0.3
 [4.0.2]: https://github.com/Fingerprint-Compliance/redact-pii/compare/v4.0.1...v4.0.2

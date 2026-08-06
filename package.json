@@ -22,8 +22,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/solvvy/redact-pii.git"
+    "url": "https://github.com/Fingerprint-Compliance/redact-pii.git"
   },
+  "bugs": {
+    "url": "https://github.com/Fingerprint-Compliance/redact-pii/issues"
+  },
+  "homepage": "https://github.com/Fingerprint-Compliance/redact-pii#readme",
   "author": "Christian Theilemann <christian@solvvy.com>",
   "license": "MIT",
   "devDependencies": {
@@ -35,7 +39,7 @@
     "typescript": "5.9.3"
   },
   "overrides": {
-    "brace-expansion": "5.0.8",
+    "brace-expansion": "5.0.9",
     "minimatch": "10.2.6"
   },
   "prettier": {
